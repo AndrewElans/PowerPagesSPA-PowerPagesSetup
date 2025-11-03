@@ -1,0 +1,66 @@
+<!--
+Scenario 1: if I'm not signed in and navigate to portal with search params and hash
+
+    Problem: hash is lost
+        if I send this url to portal and user is not signed in
+            https://site-250101.powerappsportals.com/?supplier=name1&package=valves#shared
+        it gets coverted to
+            https://site-250101.powerappsportals.com/SignIn?ReturnUrl=%2F%3Fsupplier%3Dname1%26package%3Dvalves#shared
+        and after signin the hash is lost, arriving to
+            https://site-250101.powerappsportals.com/?supplier=name1&package=valves
+
+    Fix: url encode # to %23
+        https://site-250101.powerappsportals.com/?supplier=name1&package=valves#shared ->
+        https://site-250101.powerappsportals.com/SignIn?ReturnUrl=%2F%3Fsupplier%3Dname1%26package%3Dvalves%23shared ->
+        https://site-250101.powerappsportals.com/Account/Login/ExternalLogin?ReturnUrl=%2F%3Fsupplier%3Dname1%26package%3Dvalves%23shared&provider=https://login.windows.net/e992fa6b-037c-4cac-a5c0-23bc9dd99396/ -> finally arriving to:
+        https://site-250101.powerappsportals.com/?supplier=name1&package=valves#shared
+
+    Scenario 2: add login_hint:
+        https://site-250101.powerappsportals.com/?supplier=name1&package=valves#shared ->
+        https://site-250101.powerappsportals.com/SignIn?ReturnUrl=%2F%3Fsupplier%3Dname1%26package%3Dvalves%23shared ->
+        https://site-250101.powerappsportals.com/Account/Login/ExternalLogin?ReturnUrl=%2F%3Fsupplier%3Dname1%26package%3Dvalves%23shared&provider=https://login.windows.net/e992fa6b-037c-4cac-a5c0-23bc9dd99396/&login_hint=andrew.elans@250101devgmail.onmicrosoft.com ->
+        https://site-250101.powerappsportals.com/?supplier=name1&package=valves#shared
+
+Implementation:
+    ?supplier=name1&package=valves#shared
+        search: ?supplier=name1&package=valves
+        hash: #shared
+    1) add 'ReturnUrl=' + urlencode url + search + hash 
+        '?ReturnUrl=' + location.search /* this is already url-encoded */ + encodeURIComponent(.hash); // -> ?ReturnUrl=%2F%3Fsupplier%3Dname1%26package%3Dvalves%23shared
+    2) add provider with tenant:
+        &provider=https://login.windows.net/e992fa6b-037c-4cac-a5c0-23bc9dd99396/
+    3) add login_hint if present
+        &login_hint=essa.stuckes@241220devgmail.onmicrosoft.com
+-->
+
+<script>
+    const l = location;
+    const p = l.pathname.toLowerCase();
+    const shallRedirect = p.includes('signin'); // can also add 
+    if (shallRedirect) {
+        const portalObj = window["Microsoft"].Dynamic365.Portal;
+        const tenant = portalObj.tenant;
+        const portalObjEmail = portalObj.User.email;
+        let email = '';
+        if (l.search.includes('login_hint')) {
+            // do nothing
+            // if login_hint is present, email will be ''
+            // coming from msal-index.js on user action clicking button.user-emailmsal when changing accounts
+        } else if (portalObjEmail) {
+            email = portalObjEmail;
+        } else {
+            // we store last active user's email in localStorage to pickup for silent authentication if possible
+            const lastPortalUser = localStorage.getItem('lastPortalUser');
+            if (lastPortalUser) {
+                email = lastPortalUser;
+            }
+        };
+
+        const loginHint = email ? `&login_hint=${email}` : '';
+        const search = l.search + encodeURIComponent(l.hash); 
+        const provider = `${search ? '&' : '?'}provider=https://login.windows.net/${tenant}/`;
+        const url = `/Account/Login/ExternalLogin${search}${provider}${loginHint}`;
+        location.replace(url);
+    }
+    document.currentScript.remove();
+</script>
