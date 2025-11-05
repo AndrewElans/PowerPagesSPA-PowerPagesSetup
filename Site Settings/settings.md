@@ -1,0 +1,14 @@
+Check/change:
+- Authentication/OpenIdConnect/AzureAD/ExternalLogoutEnabled true
+- Authentication/OpenIdConnect/AzureAD/RegistrationEnabled true
+- Authentication/Registration/AzureADLoginEnabled true
+- Authentication/Registration/Enabled true
+- Authentication/Registration/ExternalLoginEnabled true
+- Authentication/Registration/InvitationEnabled false
+- Authentication/Registration/LocalLoginEnabled false
+- Authentication/Registration/OpenRegistrationEnabled true
+- Authentication/Registration/ProfileRedirectEnabled false
+- Footer/OutputCache/Enabled false
+- Header/OutputCache/Enabled false
+- Profile/Enabled false
+- Search/Enabled false
