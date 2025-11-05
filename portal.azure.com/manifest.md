@@ -6,7 +6,7 @@ Replace in Manifest keys "web" and "spa" to the following values:
 		"homePageUrl": null,
 		"logoutUrl": null,
 		"redirectUris": [
-			"https://site-XXXXXX.powerappsportals.com"
+			"https://site-250101.powerappsportals.com"
 		],
 		"implicitGrantSettings": {
 			"enableAccessTokenIssuance": false,
@@ -14,7 +14,7 @@ Replace in Manifest keys "web" and "spa" to the following values:
 		},
 		"redirectUriSettings": [
 			{
-				"uri": "https://site-XXXXXX.powerappsportals.com",
+				"uri": "https://site-250101.powerappsportals.com",
 				"index": null
 			}
 		]
@@ -23,8 +23,8 @@ Replace in Manifest keys "web" and "spa" to the following values:
 		"redirectUris": [
 			"https://127.0.0.1:8001/*",
 			"https://127.0.0.1:8002/*",
-			"https://site-XXXXXX.powerappsportals.com/page-not-found/",
-			"https://site-XXXXXX.powerappsportals.com/_layout/tokenhtml"
+			"https://site-250101.powerappsportals.com/page-not-found/",
+			"https://site-250101.powerappsportals.com/_layout/tokenhtml"
   	]
   }
 }
